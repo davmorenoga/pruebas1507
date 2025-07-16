@@ -1,11 +1,14 @@
 name: Login and Push to Nexus
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["CI/CD + Deploy en EC2 (Amazon Linux)"]
+    types:
+      - completed
 
 jobs:
-  Login-and-push-nexus:
+  login-and-push-nexus:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -19,9 +22,12 @@ jobs:
             exit 1
           fi
 
+      - name: Esperar a que Nexus termine de iniciar (60 segundos)
+        run: sleep 60
+
       - name: Configurar Docker para usar Nexus por HTTP
         run: |
-          echo "{ \"insecure-registries\": [\"${NEXUS_URL}\"] }" | sudo tee /etc/docker/daemon.json
+          echo "{ \"insecure-registries\": [\"${NEXUS_DOCKER_REPO_URL}\"] }" | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
         env:
           NEXUS_URL: ${{ secrets.NEXUS_DOCKER_REPO_URL }}
