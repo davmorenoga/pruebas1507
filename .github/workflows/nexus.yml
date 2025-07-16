@@ -2,7 +2,7 @@ name: Login and Push to Nexus
 
 on:
   workflow_run:
-    workflows: ["CI/CD + Deploy en EC2 (Amazon Linux)"]
+    workflows: ["CI/CD+Deploy-en-EC2"]
     types:
       - completed
 
