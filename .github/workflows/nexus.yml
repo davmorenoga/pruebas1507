@@ -27,7 +27,7 @@ jobs:
 
       - name: Configurar Docker para usar Nexus por HTTP
         run: |
-          echo "{ \"insecure-registries\": [\"${NEXUS_DOCKER_REPO_URL}\"] }" | sudo tee /etc/docker/daemon.json
+          echo "{ \"insecure-registries\": [\"${NEXUS_URL}\"] }" | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
         env:
           NEXUS_URL: ${{ secrets.NEXUS_DOCKER_REPO_URL }}
