@@ -1,4 +1,4 @@
-name: Login and Push Nexus
+name: Login and Push to Nexus
 
 on:
   push:
@@ -9,28 +9,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v3
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
 
-    - name: Configurar Docker para usar Nexus HTTP
-      run: |
-        echo '{ "insecure-registries": ["${{ secrets.NEXUS_DOCKER_REPO_URL }}"] }' | sudo tee /etc/docker/daemon.json
-        sudo systemctl restart docker
+      - name: Verificar secreto NEXUS_DOCKER_REPO_URL
+        run: |
+          if [ -z "${{ secrets.NEXUS_DOCKER_REPO_URL }}" ]; then
+            echo "❌ El secreto NEXUS_DOCKER_REPO_URL está vacío o no existe."
+            exit 1
+          fi
 
-    - name: Eliminar credenciales previas (opcional)
-      run: rm -f ~/.docker/config.json
+      - name: Configurar Docker para usar Nexus por HTTP
+        run: |
+          echo "{ \"insecure-registries\": [\"${NEXUS_URL}\"] }" | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+        env:
+          NEXUS_URL: ${{ secrets.NEXUS_DOCKER_REPO_URL }}
 
-    - name: Login a Nexus
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ secrets.NEXUS_DOCKER_REPO_URL }}
-        username: ${{ secrets.NEXUS_USERNAME }}
-        password: ${{ secrets.NEXUS_PASSWORD }}
+      - name: Eliminar credenciales previas (opcional)
+        run: rm -f ~/.docker/config.json
 
-    - name: Build y push a Nexus (sin usar Docker Hub)
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ secrets.NEXUS_DOCKER_REPO_URL }}/fastapi-docker/fastapi-app:latest
+      - name: Login a Nexus
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.NEXUS_DOCKER_REPO_URL }}
+          username: ${{ secrets.NEXUS_USERNAME }}
+          password: ${{ secrets.NEXUS_PASSWORD }}
+
+      - name: Construir y subir imagen a Nexus
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.NEXUS_DOCKER_REPO_URL }}/fastapi-docker/fastapi-app:latest
