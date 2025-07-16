@@ -1,19 +1,10 @@
 from fastapi import FastAPI
-from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
-from starlette.responses import Response
+from metrics import setup_metrics
 
 app = FastAPI()
 
-REQUEST_COUNT = Counter("app_requests_total", "Número total de solicitudes a la API")
-
-@app.middleware("http")
-async def count_requests(request, call_next):
-    REQUEST_COUNT.inc()
-    return await call_next(request)
-
-@app.get("/metrics")
-def metrics():
-    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+# Configura Prometheus con middleware y endpoint /metrics
+setup_metrics(app)
 
 @app.get("/")
 def root():
