@@ -59,7 +59,7 @@ jobs:
 
           # Clonar si no existe
           if [ ! -d "pruebas1507" ]; then
-            git clone https://github.com/Luchito0703/pruebas1507.git
+            git clone https://github.com/davmorenoga/pruebas1507.git
           fi
 
           cd pruebas1507
