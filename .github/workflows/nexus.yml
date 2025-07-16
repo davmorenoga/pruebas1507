@@ -49,3 +49,4 @@ jobs:
           push: true
           tags: |
             ${{ secrets.NEXUS_DOCKER_REPO_URL }}/fastapi-docker/fastapi-app:latest
+            ${{ secrets.NEXUS_DOCKER_REPO_URL }}/fastapi-docker:${{ github.sha }}
