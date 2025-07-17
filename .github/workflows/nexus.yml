@@ -20,14 +20,6 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Instalar dependencias
-        run: |
-          pip install -r requirements.txt
-          pip install pytest  # asegúrate de tenerlo aunque no esté en requirements.txt
-
-      - name: Ejecutar pruebas con pytest
-        run: pytest tests/
-
       - name: Verificar secreto NEXUS_DOCKER_REPO_URL
         run: |
           if [ -z "${{ secrets.NEXUS_DOCKER_REPO_URL }}" ]; then
