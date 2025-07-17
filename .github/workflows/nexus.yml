@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
+      
+      - name: Run tests
+        run: pytest tests/
+
 
       - name: Verificar secreto NEXUS_DOCKER_REPO_URL
         run: |
