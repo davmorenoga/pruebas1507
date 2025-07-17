@@ -1,13 +1,14 @@
-name: Run Tests Only
+name: Tests After Nexus
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_run:
+    workflows: ["Login and Push to Nexus"]  # Este nombre debe coincidir exactamente
+    types:
+      - completed
 
 jobs:
-  test:
+  run-tests:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -28,5 +29,5 @@ jobs:
       - name: Establecer PYTHONPATH
         run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
 
-      - name: Ejecutar pruebas con Pytest
+      - name: Ejecutar pruebas con pytest
         run: pytest tests/
